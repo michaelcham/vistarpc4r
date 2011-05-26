@@ -31,7 +31,8 @@ Gem::Specification.new do |s|
     "lib/vistarpc4r/test.rb",
     "lib/vistarpc4r/vista_rpc.rb",
     "test/helper.rb",
-    "test/test_vistarpc4r.rb"
+    "test/test_vistarpc4r.rb",
+    "vistarpc4r.gemspec"
   ]
   s.homepage = %q{http://github.com/michaelcham/vistarpc4r}
   s.licenses = ["MIT"]
