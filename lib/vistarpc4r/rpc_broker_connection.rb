@@ -1,7 +1,8 @@
 require 'socket'
 require 'rpc_response'
 require 'vista_rpc'
-Module VistaRPC4r
+
+module VistaRPC4r
 class RPCBrokerConnection
   # Header chunk types
   CHUNK_TYPE_HEADER = "1"

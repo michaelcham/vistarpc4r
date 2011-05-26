@@ -1,4 +1,4 @@
-Module VistaRPC4r
+module VistaRPC4r
 class RPCResponse
   attr_accessor :type, :value, :error_message
 

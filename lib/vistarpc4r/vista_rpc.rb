@@ -1,5 +1,5 @@
 # the 'Request' of the RPC request/response.  Stores the command or api call, and arguments
-Module VistaRPC4r
+module VistaRPC4r
 class VistaRPC 
     attr_accessor :name, :type, :isCommand, :params
 

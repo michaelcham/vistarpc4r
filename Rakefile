@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "vistarpc4r"
   gem.homepage = "http://github.com/michaelcham/vistarpc4r"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: Provides capability to make rpc calls to VistA EHR systems that have rpcbroker running}
-  gem.description = %Q{TODO:}
+  gem.summary = %Q{Provides capability to make rpc calls to VistA EHR systems that have rpcbroker running}
+  gem.description = %Q{more}
   gem.email = "mike@blenderhouse.com"
   gem.authors = ["Mike Cham"]
   # dependencies defined in Gemfile
