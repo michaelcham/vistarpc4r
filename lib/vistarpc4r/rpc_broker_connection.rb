@@ -1,6 +1,6 @@
 require 'socket'
-require 'rpc_response'
-require 'vista_rpc'
+#require 'rpc_response'
+#require 'vista_rpc'
 
 module VistaRPC4r
 class RPCBrokerConnection
