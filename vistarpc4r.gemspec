@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{vistarpc4r}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mike Cham"]
-  s.date = %q{2011-05-25}
+  s.date = %q{2011-05-26}
   s.description = %q{more}
   s.email = %q{mike@blenderhouse.com}
   s.extra_rdoc_files = [
@@ -24,11 +24,12 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "examples/add_problems.rb",
+    "examples/add_vitals.rb",
+    "examples/test.rb",
     "lib/vistarpc4r.rb",
-    "lib/vistarpc4r/add_problems.rb",
     "lib/vistarpc4r/rpc_broker_connection.rb",
     "lib/vistarpc4r/rpc_response.rb",
-    "lib/vistarpc4r/test.rb",
     "lib/vistarpc4r/vista_rpc.rb",
     "test/helper.rb",
     "test/test_vistarpc4r.rb",
