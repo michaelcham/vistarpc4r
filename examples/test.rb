@@ -2,7 +2,10 @@ require './../lib/vistarpc4r/rpc_response'
 require './../lib/vistarpc4r/vista_rpc'
 require './../lib/vistarpc4r/rpc_broker_connection'
 
-#broker = RPCBrokerConnection.new('192.168.1.20', 9270, 'sys.admin', 'vista!123')
+# Medsphere maintains a public demo OpenVistA server.  It resets all of its content every night.
+# Info here ---> https://medsphere.org/docs/DOC-1003
+
+
 broker = VistaRPC4r::RPCBrokerConnection.new('openvista.medsphere.org', 9201, 'PU1234', 'PU1234!!')
 
 broker.connect

@@ -7,20 +7,21 @@ The VistA server requires each connection to have a username/password authentica
 
 This gem has been tested with Medsphere's OpenVista server distribution.
 
-Future topics for this document
-* More detail on how to use
-* Detailed examples
-* links to more information
+== Future features
+* Ruby classes for primary VistA data object
+* Some sort of connection pooling
+* ActiveRecord interface to VistA (nasty one, but cool)
+* 
 
-== Contributing to vistarpc4r
- 
-* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
-* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
-* Fork the project
-* Start a feature/bugfix branch
-* Commit and push until you are happy with your contribution
-* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
-* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+== Usage
+
+=== Installation
+You may get the latest stable version from Rubyforge.
+
+$ gem install vistarpc4r
+
+=== An Example
+Check out the examples in the examples directory, until I get the time to write more extensive documentation
 
 == Copyright
 

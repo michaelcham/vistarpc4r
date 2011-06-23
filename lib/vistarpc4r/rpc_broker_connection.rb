@@ -48,7 +48,7 @@ module VistaRPC4r
     def connect
       retVal = true
       if isConnected()
-        puts " already connected, closing first"
+        warn " already connected, closing first"
         close
       end
       @socket = TCPSocket.open(@host, @port)    # Connect
@@ -59,10 +59,10 @@ module VistaRPC4r
       tcpConnect.params[2]= "OVID"
       connectResponse = execute(tcpConnect)
       if (connectResponse == nil || connectResponse.value == nil || connectResponse.value == "reject")
-        puts "Handshake error"
+        raise "Handshake error" 
       end
       if (connectResponse.error_message != nil)
-        puts "RPC Error: " + connectResponse.error_message
+        raise "RPC Error: " + connectResponse.error_message 
       end
       @sentConnect = true
       
@@ -106,7 +106,7 @@ module VistaRPC4r
         end
       end
       if (retVal == nil)
-        puts "Lost connection to server"
+        raise "Lost connection to server"
       end
       return retVal
     end
@@ -154,11 +154,11 @@ module VistaRPC4r
     
     def setContext(context)
       if (context == @currentContext)
-        puts "context is already set to " + context + "..."
+        warn "context is already set to " + context + "..."
         return
       end
       if (@currentContext != nil) 
-        puts "changing context from " + currentContext + " to " + context
+        warn "changing context from " + currentContext + " to " + context
       end
       
       puts "Setting context to: " + context
@@ -167,7 +167,7 @@ module VistaRPC4r
       xwbCreateContext.params[0] = encryptedContext
       response = execute(xwbCreateContext)
       if (response == nil || response.error_message != nil)
-        puts "XWB CREATE CONTEXT failed: " + response.error_message
+        raise "XWB CREATE CONTEXT failed: " + response.error_message
       end
       @currentContext = context
     end
@@ -184,7 +184,7 @@ module VistaRPC4r
     def signOn() 
       signonResponse = execute(VistaRPC.new("XUS SIGNON SETUP", RPCResponse::ARRAY))
       if (signonResponse == nil || signonResponse.error_message != nil)
-        puts "XUS SIGNON SETUP failed"
+        raise "XUS SIGNON SETUP failed"
       end
       @signedOn = true
     end
@@ -217,7 +217,8 @@ module VistaRPC4r
       end
       if (hasErrors) 
         brokerInfo = extractBrokerErrorInfo(response)
-        puts("Access denied: " + brokerInfo)
+        warn("Access denied: " + brokerInfo)
+        return false
       else
         @duz = answer[0]
       end
