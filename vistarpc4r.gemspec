@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{vistarpc4r}
-  s.version = "0.2.0"
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mike Cham"]
-  s.date = %q{2011-05-27}
+  s.date = %q{2011-06-22}
   s.description = %q{more}
   s.email = %q{mike@blenderhouse.com}
   s.extra_rdoc_files = [
