@@ -74,11 +74,15 @@ module VistaRPC4r
     def close()
       if isConnected()
         if @sentConnect
-          @sentConnect = false
+          @sentConnect = false  # set in connect()
+          @signedOn=false  # set in signOn() inside connect()
           bye = VistaRPC.new("#BYE#", RPCResponse::SINGLE_VALUE, true)
-          execute(bye)
+          retval = execute(bye)
           @socket.close()
           @socket = nil
+          @duz = "0"
+          @currentContext = nil
+          return retval
         end
       end
     end
@@ -98,9 +102,9 @@ module VistaRPC4r
         # attempt to log back on
         if (connect())
           if (@currentContext != nil) 
-            context = !currentContext
+            tempcontext = @currentContext
             @currentContext = nil
-            setContext(context)
+            setContext(tempcontext)
           end
           retVal = executeOnce(rpc)
         end
@@ -158,7 +162,7 @@ module VistaRPC4r
         return
       end
       if (@currentContext != nil) 
-        warn "changing context from " + currentContext + " to " + context
+        warn "changing context from " + @currentContext + " to " + context
       end
       
       puts "Setting context to: " + context
@@ -170,6 +174,7 @@ module VistaRPC4r
         raise "XWB CREATE CONTEXT failed: " + response.error_message
       end
       @currentContext = context
+      return response
     end
     
     
