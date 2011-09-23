@@ -159,6 +159,9 @@ module VistaRPC4r
         rpc.params = args
       end
       rpcresponse = execute(rpc)
+      if rpcresponse.nil?
+        return nil
+      end
       if !rpcresponse.error_message.nil?
         @lastvistaerror = rpcresponse.error_message
       end
@@ -175,6 +178,9 @@ module VistaRPC4r
         rpc.params = args
       end
       rpcresponse = execute(rpc)
+      if rpcresponse.nil?
+        return nil
+      end
       if !rpcresponse.error_message.nil?
         @lastvistaerror = rpcresponse.error_message
       end
