@@ -297,7 +297,7 @@ module VistaRPC4r
       if (flush())
         retVal = getResponse(rpc.type)
         if @loglevel ==2
-          if retval.nil?  # io error
+          if retVal.nil?  # io error
             puts "<Response> IO Error </Response>"
           else
             puts "<Response> " + retVal.to_s + "</Response>"
