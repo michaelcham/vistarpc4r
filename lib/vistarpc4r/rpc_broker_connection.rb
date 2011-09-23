@@ -36,13 +36,19 @@ module VistaRPC4r
       @port=port
       @access=access
       @verify=verify
-      @debug=debug
+      if debug
+        @loglevel=2
+      else
+        @loglevel=0
+      end
       @token=nil
       @socket = nil
       @encryptedAV = nil
       @writeBuffer = String.new
       @duz = "0"
       @currentContext = nil
+      @lastvistaerror = nil
+
     end
     
     def connect
@@ -70,7 +76,8 @@ module VistaRPC4r
       retVal = logIn()
       return retVal
     end
-    
+
+    # close tries to gracefully end the VistA session.  If socket is already dead.....
     def close()
       if isConnected()
         if @sentConnect
@@ -81,36 +88,49 @@ module VistaRPC4r
           @socket.close()
           @socket = nil
           @duz = "0"
+          @lastvistaerror = nil
           @currentContext = nil
           return retval
         end
       end
+    end
+
+    # force the broker into the pre connect state
+    def forceclose
+      @sentConnect = false  # set in connect()
+      @signedOn=false  # set in signOn() inside connect()
+      @socket.close()
+      @socket = nil
+      @duz = "0"
+      @currentContext = nil
+      @lastvistaerror=nil
+      return true
     end
     
     def isConnected()
       return @socket != nil
     end
     
+    # execute differs from RPCBrokerConnection - We want the application to know about eof
+    # execute will return nil if ioerror
     def execute(rpc)
+      @lastvistaerror = nil
       retVal = executeOnce(rpc)
       if (retVal == nil && @signedOn) 
-        #reconnect
+        #maybe some reconnect logic
         if (rpc.name == "#BYE#")
           # We're disconnecting anyway
           return nil
         end
         # attempt to log back on
-        if (connect())
-          if (@currentContext != nil) 
-            tempcontext = @currentContext
-            @currentContext = nil
-            setContext(tempcontext)
-          end
-          retVal = executeOnce(rpc)
-        end
-      end
-      if (retVal == nil)
-        raise "Lost connection to server"
+        #if (connect())
+        #  if (@currentContext != nil) 
+        #    tempcontext = @currentContext
+        #    @currentContext = nil
+        #    setContext(tempcontext)
+        #  end
+        #  retVal = executeOnce(rpc)
+        #end
       end
       return retVal
     end
@@ -139,6 +159,9 @@ module VistaRPC4r
         rpc.params = args
       end
       rpcresponse = execute(rpc)
+      if !rpcresponse.error_message.nil?
+        @lastvistaerror = rpcresponse.error_message
+      end
       return rpcresponse.value
     end
 
@@ -152,9 +175,16 @@ module VistaRPC4r
         rpc.params = args
       end
       rpcresponse = execute(rpc)
+      if !rpcresponse.error_message.nil?
+        @lastvistaerror = rpcresponse.error_message
+      end
       return rpcresponse.value
     end
 
+    # if call_a or call_s return nil, you can check to see if there was a VistA error message
+    def lastvistaerror
+      return @lastvistaerror
+    end
     
     def setContext(context)
       if (context == @currentContext)
@@ -165,7 +195,7 @@ module VistaRPC4r
         warn "changing context from " + @currentContext + " to " + context
       end
       
-      puts "Setting context to: " + context
+      #puts "Setting context to: " + context
       xwbCreateContext = VistaRPC.new("XWB CREATE CONTEXT", RPCResponse::SINGLE_VALUE)
       encryptedContext = xwbCreateContext.encrypt(context)
       xwbCreateContext.params[0] = encryptedContext
@@ -182,7 +212,14 @@ module VistaRPC4r
       return @duz
     end
     
-    
+    # set log level  0= off, 1= informational, 2=debug
+    def loglevel(level)
+      if level < 0 or level > 2
+        return nil
+      end
+      @loglevel = level
+      return @loglevel
+    end
     
     private  
     
@@ -259,8 +296,12 @@ module VistaRPC4r
       write(END_MARKER)
       if (flush())
         retVal = getResponse(rpc.type)
-        if @debug
-          puts "<Response> " + retVal.to_s + "</Response>"
+        if @loglevel ==2
+          if retval.nil?  # io error
+            puts "<Response> IO Error </Response>"
+          else
+            puts "<Response> " + retVal.to_s + "</Response>"
+          end
         end
       end
       return retVal
@@ -350,7 +391,7 @@ module VistaRPC4r
     def flush()
       retVal = false
       if (isConnected() || connect()) 
-        if @debug
+        if @loglevel ==2
           puts "<Request>" + @writeBuffer + "</Request>"
         end
         @socket.write(@writeBuffer)
@@ -361,21 +402,24 @@ module VistaRPC4r
       return retVal
     end
     
+    # Get response will return a response object or nil
+    # Response object could contain a vista generated security/other error
+    # Nil means something went wrong with the connection, check the system error
     def getResponse(rpcType)
       hadError = Array.new  # for passing around boolean by reference
       hadError[0]=false
+
+      # Check for VistA erros
       securityError = readSPack(hadError)
-      #puts "<SecurityError>" + securityError + "</SecurityError>"
       if (hadError[0])
-        return nil
+        return nil # had a io error
       end
       if (securityError.empty?)
         securityError = nil
       end
-      
       otherError = readSPack(hadError)
       if (hadError[0])
-        return nil
+        return nil  # had a io error
       end
       if (otherError.empty?)
         otherError = nil
@@ -445,7 +489,17 @@ module VistaRPC4r
       buffer = String.new
       gotCR = false
       while true
-        byte = @socket.readbyte  # read one byte
+        begin
+          byte = @socket.readbyte  # read one byte
+        rescue EOFError => emsg
+          if (hadError != nil) 
+            hadError[0] = true
+          end
+          if @loglevel ==2
+            puts "EOFError"
+          end
+          return nil
+        end      
         if (byte == END_MARKER)
           if (endMarker != nil) 
             endMarker[0] = true
@@ -474,9 +528,32 @@ module VistaRPC4r
       if (hadError != nil) 
         hadError[0] = false
       end
-      len = @socket.readbyte  # read one byte into a fixnum
+      
+      begin
+        len = @socket.readbyte  # read one byte into a fixnum
+      rescue EOFError => emsg
+        if (hadError != nil) 
+          hadError[0] = true
+        end
+        if @loglevel ==2
+          puts "EOFError"
+        end
+        return nil
+      end
+        
       data = String.new
-      data = @socket.read(len)
+      begin
+        data = @socket.read(len)
+      rescue EOFError => emsg
+        if (hadError != nil) 
+          hadError[0] = true
+        end
+        if @loglevel ==2
+          puts "EOFError"
+        end
+        return nil
+      end 
+       
       return data
     end
     
