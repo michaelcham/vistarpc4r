@@ -77,7 +77,7 @@ module VistaRPC4r
       return retVal
     end
 
-    # close tries to gracefully end the VistA session.  If socket is already dead.....
+    # close tries to gracefully end the VistA session.  If socket is already dead, will return nil
     def close()
       if isConnected()
         if @sentConnect
@@ -95,7 +95,7 @@ module VistaRPC4r
       end
     end
 
-    # force the broker into the pre connect state
+    # force the broker into the pre connect state.  Use if close returns nil
     def forceclose
       @sentConnect = false  # set in connect()
       @signedOn=false  # set in signOn() inside connect()
@@ -112,7 +112,7 @@ module VistaRPC4r
     end
     
     # execute differs from RPCBrokerConnection - We want the application to know about eof
-    # execute will return nil if ioerror
+    # execute will return nil if ioerror most likely unexpected EOFError
     def execute(rpc)
       @lastvistaerror = nil
       retVal = executeOnce(rpc)
