@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{vistarpc4r}
-  s.version = "0.2.3"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Mike Cham"]
-  s.date = %q{2011-08-30}
+  s.date = %q{2011-09-25}
   s.description = %q{more}
   s.email = %q{mike@blenderhouse.com}
   s.extra_rdoc_files = [
@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/michaelcham/vistarpc4r}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.5.3}
+  s.rubygems_version = %q{1.4.2}
   s.summary = %q{Provides capability to make rpc calls to VistA EHR systems that have rpcbroker running}
 
   if s.respond_to? :specification_version then
